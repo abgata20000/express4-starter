@@ -6,11 +6,16 @@ logger = require('morgan')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
 app = express()
+
+#######################################################################################
 # view engine setup
+#######################################################################################
 app.set 'views', path.join(__dirname, 'views')
 app.set 'view engine', 'jade'
 
+#######################################################################################
 # coofee & stylus
+#######################################################################################
 coffeeMiddleware = require('coffee-middleware')
 stylus = require('stylus')
 nib = require('nib')
@@ -29,7 +34,9 @@ app.use logger('dev')
 app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: false)
 
+#######################################################################################
 # セッションをmongoで管理
+#######################################################################################
 app.use cookieParser()
 session = require('express-session')
 store = null
@@ -50,7 +57,9 @@ else if conf.session.type == 'redis'
     ttl: conf.session.redis.ttl
     disableTTL: conf.session.redis.disable_ttl
 
+#######################################################################################
 # セッションの設定
+#######################################################################################
 app.use session
   secret: conf.session.secret
   resave: false
@@ -62,7 +71,9 @@ app.use session
     # maxAge: new Date(Date.now() + 24 * 60 * 60 * 1000)
   # clear_interval: 60 * 60
 
+#######################################################################################
 # i18n(多言語設定)
+#######################################################################################
 i18n = require("i18n")
 i18n.configure
   locales: ['ja', 'en']
@@ -80,30 +91,48 @@ app.use (req, res, next) ->
     res.locals.locales = 'ja'
   next()
 
+#######################################################################################
 # フラッシュメッセージとユーザー名を埋め込み
+#######################################################################################
 app.use (req, res, next) ->
   res.locals.username = req.session.username
   if req.session.flash
     res.locals.flash = req.session.flash
   req.session.flash = null
   next()
-
+#######################################################################################
 # ルーティングの設定
+#######################################################################################
 HeaderControl = require('./models/server/header_control')
 routes = require('./routes/index')
 app.use express.static(path.join(__dirname, 'public'))
+
+#######################################################################################
 # デフォルトルート
+#######################################################################################
 app.use '/', HeaderControl, routes
 
+#######################################################################################
+# Restfull API(MongoDB)
+#######################################################################################
+allowAPIModels = require('./models/db/allow_api_models')
+dbAPI = require('./routes/db/api')
+for modelInfo in allowAPIModels
+  app.use '/db/' + modelInfo.name, HeaderControl, dbAPI[modelInfo.name]
+
+#######################################################################################
 # catch 404 and forward to error handler
+#######################################################################################
 app.use (req, res, next) ->
   err = new Error('Not Found')
   err.status = 404
   next err
   return
+#######################################################################################
 # error handlers
 # development error handler
 # will print stacktrace
+#######################################################################################
 if app.get('env') == 'development'
   app.use (err, req, res, next) ->
     res.status err.status or 500
@@ -111,8 +140,10 @@ if app.get('env') == 'development'
       message: err.message
       error: err
     return
+#######################################################################################
 # production error handler
 # no stacktraces leaked to user
+#######################################################################################
 app.use (err, req, res, next) ->
   res.status err.status or 500
   res.render 'error',
