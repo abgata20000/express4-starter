@@ -6,6 +6,7 @@
     "start": "node-dev ./bin/www"
   },
   "dependencies": {
+    "basic-auth-connect": "^1.0.0",
     "body-parser": "~1.13.2",
     "coffee-middleware": "^0.3.0",
     "coffee-script": "^1.9.3",

@@ -3,6 +3,9 @@ config:
   servicename: "SampleApp"
   version: "0.0.1"
   servername: http://sample.com
+  basicAuth:
+    user: user
+    password: password
   mongo:
     name: app_dbname
     host: localhost

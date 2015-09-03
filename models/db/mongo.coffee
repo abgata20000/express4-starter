@@ -23,8 +23,8 @@ userSchema = new Schema({
   logged_in: {type: Boolean, default: true}
   last_login: {type: Date, default: Date.now }
   last_access: {type: Date, default: Date.now }
-  last_location: [Number, Number]
-  locations: [[Number, Number]]
+  last_location: {type: [Number, Number], index: '2d'}
+  locations: {type: [[Number, Number]], default: [], index: '2d'}
   shops: {type: [Schema.Types.ObjectId], ref: 'Shop'}
   created_at: {type: Date, default: Date.now }
   updated_at: {type: Date, default: Date.now }
@@ -47,7 +47,7 @@ shopSchema = new Schema({
   address1: String
   address2: String
   address3: String
-  location: [Number, Number]
+  location: {type: [Number, Number], index: '2d'}
   users: {type: [Schema.Types.ObjectId], ref: 'User'}
   enabled: {type: Boolean, default: true}
   created_at: {type: Date, default: Date.now }

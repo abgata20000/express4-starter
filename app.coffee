@@ -5,7 +5,9 @@ favicon = require('serve-favicon')
 logger = require('morgan')
 cookieParser = require('cookie-parser')
 bodyParser = require('body-parser')
+basicAuth = require('basic-auth-connect')
 app = express()
+
 
 #######################################################################################
 # view engine setup
@@ -117,6 +119,8 @@ app.use '/', HeaderControl, routes
 #######################################################################################
 allowAPIModels = require('./models/db/allow_api_models')
 dbAPI = require('./routes/db/api')
+app.use '/db/*', basicAuth (user, pass) ->
+  return user is conf.basicAuth.user && pass is conf.basicAuth.password
 for modelInfo in allowAPIModels
   app.use '/db/' + modelInfo.name, HeaderControl, dbAPI[modelInfo.name]
 
