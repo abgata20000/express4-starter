@@ -1,0 +1,30 @@
+config:
+  fname: "defalut.yaml"
+  servicename: "SampleApp"
+  version: "0.0.1"
+  servername: http://sample.com
+  mongo:
+    name: app_dbname
+    host: localhost
+    port: 27017
+    user:
+    password:
+  session:
+    type: redis
+    secret: secret
+    mongo:
+      dbname: session_dbname
+      host: localhost
+      port: 27017
+      user:
+      password:
+    redis:
+      host: localhost
+      port: 6379
+      prefix: mysession
+      ttl: 604800
+      disable_ttl: true
+
+  redis:
+    host: localhost
+    port: 6379

@@ -30,26 +30,37 @@ app.use bodyParser.json()
 app.use bodyParser.urlencoded(extended: false)
 
 # セッションをmongoで管理
-session = require('express-session')
-MongoStore = require('connect-mongo')(session)
-
-mongo_user = ''
-if conf.session.user
-  mongo_user = conf.session.user + ':' + conf.session.password + '@'
-mongo_uri = 'mongodb://' + mongo_user + conf.session.host + ':' + conf.session.port + '/' + conf.session.dbname
-store = new MongoStore
-  url: mongo_uri
 app.use cookieParser()
+session = require('express-session')
+store = null
+if conf.session.type == 'mongo'
+  MongoStore = require('connect-mongo')(session)
+  mongo_user = ''
+  if conf.session.mongo.user
+    mongo_user = conf.session.mongo.user + ':' + conf.session.mongo.password + '@'
+  mongo_uri = 'mongodb://' + mongo_user + conf.session.mongo.host + ':' + conf.session.mongo.port + '/' + conf.session.mongo.dbname
+  store = new MongoStore
+    url: mongo_uri
+else if conf.session.type == 'redis'
+  RedisStore = require('connect-redis')(session)
+  store=  new RedisStore
+    host: conf.session.redis.host
+    port: conf.session.redis.port
+    prefix: conf.session.redis.prefix
+    ttl: conf.session.redis.ttl
+    disableTTL: conf.session.redis.disable_ttl
 
+# セッションの設定
 app.use session
   secret: conf.session.secret
   resave: false
   saveUninitialized: true
   store: store
   cookie:
+    path: '/'
     httpOnly: false
     # maxAge: new Date(Date.now() + 24 * 60 * 60 * 1000)
-  clear_interval: 60 * 60
+  # clear_interval: 60 * 60
 
 # i18n(多言語設定)
 i18n = require("i18n")
