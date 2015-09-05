@@ -27,6 +27,12 @@ config:
       prefix: mysession
       ttl: 604800
       disable_ttl: true
+  aws:
+    accessKeyId:
+    secretAccessKey:
+    bucket:
+    region: ap-northeast-1
+    s3HostName: s3-ap-northeast-1.amazonaws.com
 
   redis:
     host: localhost

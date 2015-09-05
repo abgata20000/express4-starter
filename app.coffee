@@ -34,7 +34,7 @@ app.use coffeeMiddleware(
 #app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use logger('dev')
 app.use bodyParser.json()
-app.use bodyParser.urlencoded(extended: false)
+app.use bodyParser.urlencoded({limit:'200mb', extended: false})
 
 #######################################################################################
 # セッションをmongoで管理
