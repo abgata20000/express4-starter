@@ -5,3 +5,7 @@ public/stylesheets/*.css
 config/*.yaml
 config/*.config
 mongouser.js.org
+tmp/*
+!tmp/.keep
+.idea
+*.iml

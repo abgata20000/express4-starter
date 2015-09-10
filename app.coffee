@@ -31,7 +31,7 @@ app.use coffeeMiddleware(
   compress: true)
 
 # uncomment after placing your favicon in /public
-#app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+app.use(favicon(path.join(__dirname, 'public', 'images/favicon.ico')));
 app.use logger('dev')
 app.use bodyParser.json()
 app.use bodyParser.urlencoded({limit:'200mb', extended: false})
@@ -77,20 +77,24 @@ app.use session
 # i18n(多言語設定)
 #######################################################################################
 i18n = require("i18n")
+Locales = require('./models/app/locales')
+# i18n
 i18n.configure
-  locales: ['ja', 'en']
+  locales: Locales.langs
   defaultLocale: 'ja'
   directory: __dirname + "/locales"
   objectNotation: true
 app.use i18n.init
+# 言語を設定
 app.use (req, res, next) ->
   if req.session.locale
-    res.locals.locales = [{lang: 'ja', name: '日本語'}, {lang: 'en', name: 'English'}]
+    res.locals.locales = Locales.locales
     res.locals.locale = req.session.locale
     i18n.setLocale(req, req.session.locale)
   else
     req.session.locale = 'ja'
     res.locals.locales = 'ja'
+
   next()
 
 #######################################################################################
@@ -105,14 +109,14 @@ app.use (req, res, next) ->
 #######################################################################################
 # ルーティングの設定
 #######################################################################################
-HeaderControl = require('./models/server/header_control')
+BeforeAction = require('./models/server/before_action')
 routes = require('./routes/index')
 app.use express.static(path.join(__dirname, 'public'))
 
 #######################################################################################
 # デフォルトルート
 #######################################################################################
-app.use '/', HeaderControl, routes
+app.use '/', BeforeAction, routes
 
 #######################################################################################
 # Restfull API(MongoDB)
@@ -122,7 +126,7 @@ dbAPI = require('./routes/db/api')
 app.use '/db/*', basicAuth (user, pass) ->
   return user is conf.basicAuth.user && pass is conf.basicAuth.password
 for modelInfo in allowAPIModels
-  app.use '/db/' + modelInfo.name, HeaderControl, dbAPI[modelInfo.name]
+  app.use '/db/' + modelInfo.name, BeforeAction, dbAPI[modelInfo.name]
 
 #######################################################################################
 # catch 404 and forward to error handler

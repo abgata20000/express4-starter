@@ -3,6 +3,7 @@ config:
   servicename: "SampleApp"
   version: "0.0.1"
   servername: http://sample.com
+  serverNum: 1
   port: 3000
   basicAuth:
     user: user
